@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Orders - QR-ART
+{% endblock %}
+
+{% block content %}
+	{% with msgs =  get_flashed_messages(with_categories=True) %}
+	{% for c, msg in msgs %}
+		{% if c == 'error' %}
+			<div class="flash-error">
+		{% else %}
+			<div class="success">
+		{% endif %}
+			{{ msg | safe }}</div><br>
+	{% endfor %}
+	{% endwith %}
+
+    <table>
+        <tr valign="top">
+
+            <td><img src="{{ avatars.robohash(profile.wallet_address) }}"></td>
+            <td>     </td>
+            <td>
+                <h1>User: {{ profile.name }}</h1>
+                <p>id: {{ profile.id }}</p>
+				<p>Email: {{ profile.email }}</p>
+				<p>Phone: {{ profile.phone }}</p>
+				<p>Wallet: {{ profile.wallet_address }}</p>
+            </td>
+        </tr>
+    </table>
+	<hr>
+    <table class="table table-striped">
+        <tr>
+            <th>Means of payment</th>
+            <th>Balance</th>
+        </tr>
+    {% for balance in balances %}
+        <tr>
+            <td>{{ balance.name }}</td>
+            <td>{{ 0 }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+
+{% endblock %}

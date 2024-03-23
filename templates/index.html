@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Home - GPU4ALL
+{% endblock %}
+
+{% block content %}
+	{% with msgs =  get_flashed_messages(with_categories=True) %}
+	{% for c, msg in msgs %}
+		{% if c == 'error' %}
+			<div class="flash-error">
+		{% else %}
+			<div class="success">
+		{% endif %}
+			{{ msg | safe}}</div><br>
+	{% endfor %}
+	{% endwith %}
+
+  <style>
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .gallery img {
+      width: 200px;
+      margin: 5px;
+    }
+    figure {
+      margin: 5px;
+      text-align: center;
+<!--	  border: thin #c0c0c0 solid;-->
+	  flex-flow: column;
+	  padding: 5px;
+	  max-width: 220px;
+	  margin: auto;
+    }
+    figcaption {
+      vertical-align: top;
+	  background-color: #222;
+	  color: #fff;
+	  font: italic smaller sans-serif;
+	  padding: 3px;
+	  text-align: center;
+    }
+  </style>
+
+<!--<h2>GPU4ALL-Distributed and autonomous intelligence (DAI)</h2>-->
+
+<br>
+<div class="container">
+	<div hx-get="/example">Get Some HTML</div>
+</div>
+
+  <div class="container mt-3">
+    <div class="alert alert-warning" role="alert">
+<!--      This is a user note. You can customize the alert type (e.g., alert-info, alert-warning, alert-danger) based on the nature of the note.-->
+		The service is working in test mode. <br>
+    </div>
+  </div>
+
+{% endblock %}
