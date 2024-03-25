@@ -56,10 +56,10 @@ def get_profile():
 
 @app.route("/install")
 def install():
-    os.makedirs('worker', exist_ok=True)
-
-    cmd = "pip -V"
-    result = run(cmd, hide=True, warn=True)
+    # os.makedirs('worker', exist_ok=True)
+    cmd = "pip install -r g4a-worker-GPU/requirements.txt"
+    # cmd = "pip -V"
+    result = run(cmd, hide=False, warn=True)
     print(result.ok)
     print(result.stdout)
     return result.stdout
