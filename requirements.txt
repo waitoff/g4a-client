@@ -3,5 +3,7 @@ python-dotenv~=1.0.1
 bootstrap-flask
 Flask-APScheduler
 flask-avatars
+invoke
+
 
 

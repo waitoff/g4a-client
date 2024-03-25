@@ -12,6 +12,8 @@ from flask_apscheduler import APScheduler
 from flask import Flask, render_template
 from dotenv import load_dotenv
 from flask_avatars import Avatars
+from invoke import run
+
 
 load_dotenv(override=True)
 port = int(os.environ.get("UVICORN_PORT", 15015))
@@ -50,6 +52,16 @@ def get_profile():
         'id': '1234567890'
     }
     return render_template('profile.html', profile=profile)
+
+
+@app.route("/install")
+def install():
+    print('Install')
+    cmd = "pip -V"
+    result = run(cmd, hide=True, warn=True)
+    print(result.ok)
+    print(result.stdout)
+    return result.stdout
 
 
 @app.route("/example")
