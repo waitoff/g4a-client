@@ -56,7 +56,8 @@ def get_profile():
 
 @app.route("/install")
 def install():
-    print('Install')
+    os.makedirs('worker', exist_ok=True)
+
     cmd = "pip -V"
     result = run(cmd, hide=True, warn=True)
     print(result.ok)
@@ -66,7 +67,14 @@ def install():
 
 @app.route("/example")
 def example():
-    return '<button type="submit" onclick="myFunction()">Click me</button>'
+    print('Example')
+    cmd = "dir"
+    result = run(cmd, hide=True, warn=True)
+    print(result.ok)
+    print(result.stdout)
+    return (result.stdout).encode('cp1251')
+    # return result.stdout.decode('cp1251').encode('utf8').replace('\r\n', '<br>')
+    # return '<button type="submit" onclick="myFunction()">Click me</button>'
 
 
 def open_browser():
