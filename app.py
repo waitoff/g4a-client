@@ -72,7 +72,7 @@ def example():
     result = run(cmd, hide=True, warn=True)
     print(result.ok)
     print(result.stdout)
-    return (result.stdout).encode('cp1251')
+    return result.stdout
     # return result.stdout.decode('cp1251').encode('utf8').replace('\r\n', '<br>')
     # return '<button type="submit" onclick="myFunction()">Click me</button>'
 
