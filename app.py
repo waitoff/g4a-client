@@ -102,8 +102,6 @@ def example():
     print(result.ok)
     print(result.stdout)
     return 'True'
-    # return result.stdout.decode('cp1251').encode('utf8').replace('\r\n', '<br>')
-    # return '<button type="submit" onclick="myFunction()">Click me</button>'
 
 
 def open_browser():
