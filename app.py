@@ -2,9 +2,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # __author__ = 'szhdanoff@gmail.com'
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 import os
 import webbrowser
+import secrets
+import string
 
 from threading import Timer
 from flask_bootstrap import Bootstrap4 as Bootstrap
@@ -13,13 +15,18 @@ from flask import Flask, render_template
 from dotenv import load_dotenv
 from flask_avatars import Avatars
 from invoke import run
-
+from web3 import Web3
+# from web3.middleware import geth_poa_middleware
+# from eth_account.messages import encode_defunct
 
 load_dotenv(override=True)
 port = int(os.environ.get("UVICORN_PORT", 15015))
 host = os.environ.get("UVICORN_HOST", "127.0.0.1")
 debug = bool(os.environ.get("UVICORN_DEBUG", False))
-SECRET_KEY = 'L7qi1RC7b6B24UFfBUu69497e72H2NFhbUlO6P9GkP86isf7i2'
+server_url = os.environ.get("SERVER_URL", "http://127.0.0.1:10101")
+user_id = os.environ.get("USER_ID")
+# SECRET_KEY = 'L7qi1RC7b6B24UFfBUu69497e72H2NFhbUlO6P9GkP86isf7i2'
+SECRET_KEY = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(64))
 
 app = Flask(__name__, static_folder="static")
 app.config.from_object(__name__)
@@ -35,21 +42,34 @@ def job1():
     print('Job 1 executed')
 
 
-# upload_folder = os.path.join('static', 'images')
-# os.makedirs(upload_folder, exist_ok=True)
 @app.route("/")
 def home():
+    global user_id
+    # make User ID random if not exists
+    env_file_path = '.env'
+    if not os.path.exists(env_file_path):
+        ww3 = Web3()
+        w = ww3.eth.account.create()
+        new_user_id = str(w.address)
+        if user_id is None:
+            user_id = new_user_id
+        env_variables = {
+            "USER_ID": new_user_id,
+            "USER_KEY": str(w.key.hex()),
+            "SERVER_URL": server_url
+        }
+        with open('.env', 'w') as f:
+            for key, value in env_variables.items():
+                f.write(f"{key}={value}\n")
+
     return render_template('index.html')
 
 
 @app.route("/profile")
 def get_profile():
     profile = {
-        'name': 'John Doe',
-        'wallet_address': '0x1234567890123456789012345678901234567890',
-        'email': 'nHb9w@example.com',
-        'phone': '555-555-5555',
-        'id': '1234567890'
+        'name': 'None',
+        'id': user_id
     }
     return render_template('profile.html', profile=profile)
 
@@ -59,10 +79,9 @@ def install():
     env_file_path = os.path.join(os.path.dirname(__file__), 'worker-gpu', ".env")
     if os.path.exists(env_file_path):
         os.remove(env_file_path)
-
     env_variables = {
-        "USER_ID": "DEMO",
-        "SERVER_URL": "http://127.0.0.1:10101"
+        "USER_ID": user_id,
+        "SERVER_URL": server_url
     }
     with open(env_file_path, 'w') as f:
         for key, value in env_variables.items():

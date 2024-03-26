@@ -19,14 +19,11 @@
     <table>
         <tr valign="top">
 
-            <td><img src="{{ avatars.robohash(profile.wallet_address) }}"></td>
+            <td><img src="{{ avatars.robohash(profile.id) }}"></td>
             <td>     </td>
             <td>
                 <h1>User: {{ profile.name }}</h1>
                 <p>id: {{ profile.id }}</p>
-				<p>Email: {{ profile.email }}</p>
-				<p>Phone: {{ profile.phone }}</p>
-				<p>Wallet: {{ profile.wallet_address }}</p>
             </td>
         </tr>
     </table>
