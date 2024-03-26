@@ -56,25 +56,33 @@ def get_profile():
 
 @app.route("/install")
 def install():
-    # os.makedirs('worker', exist_ok=True)
+    env_file_path = os.path.join(os.path.dirname(__file__), 'worker-gpu', ".env")
+    if os.path.exists(env_file_path):
+        os.remove(env_file_path)
 
-    cmd = "(cd worker-GPU && run.bat)"
-    # cmd = "pip install -r g4a-worker-GPU/requirements.txt"
-    # cmd = "pip -V"
+    env_variables = {
+        "USER_ID": "DEMO",
+        "SERVER_URL": "http://127.0.0.1:10101"
+    }
+    with open(env_file_path, 'w') as f:
+        for key, value in env_variables.items():
+            f.write(f"{key}={value}\n")
+
+    cmd = "call run.bat"
     result = run(cmd, hide=False, warn=True)
     print(result.ok)
     print(result.stdout)
-    return result.stdout
+    return 'True'
 
 
 @app.route("/example")
 def example():
-    print('Example')
-    cmd = "dir"
-    result = run(cmd, hide=True, warn=True)
+    print('Update')
+    cmd = "update.bat"
+    result = run(cmd, hide=False, warn=True)
     print(result.ok)
     print(result.stdout)
-    return result.stdout
+    return 'True'
     # return result.stdout.decode('cp1251').encode('utf8').replace('\r\n', '<br>')
     # return '<button type="submit" onclick="myFunction()">Click me</button>'
 
