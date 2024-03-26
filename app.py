@@ -74,8 +74,8 @@ def get_profile():
     return render_template('profile.html', profile=profile)
 
 
-@app.route("/install")
-def install():
+@app.route("/start")
+def start():
     env_file_path = os.path.join(os.path.dirname(__file__), 'worker-gpu', ".env")
     if os.path.exists(env_file_path):
         os.remove(env_file_path)
@@ -91,17 +91,17 @@ def install():
     result = run(cmd, hide=False, warn=True)
     print(result.ok)
     print(result.stdout)
-    return 'True'
+    return str(result.ok)
 
 
-@app.route("/example")
-def example():
+@app.route("/update")
+def update():
     print('Update')
     cmd = "update.bat"
     result = run(cmd, hide=False, warn=True)
     print(result.ok)
     print(result.stdout)
-    return 'True'
+    return str(result.ok)
 
 
 def open_browser():

@@ -47,12 +47,33 @@
 <!--<h2>GPU4ALL-Distributed and autonomous intelligence (DAI)</h2>-->
 
 <br>
-<div class="container">
-	<div hx-get="/example">Get Some HTML</div>
+
+<div class="md-container">
+  <p>.</p>
+  <ul>
+    <li>We recommend saving the .env file</li>
+    <li>To continue, click Start</li>
+  </ul>
+  <p>.</p>
 </div>
 
-<div class="Install">
-	<div hx-get="/install"> Install</div>
+
+<div class="container">
+	<button
+			hx-get="/update"
+			hx-swap="outerHTML"
+	>Update
+	</button>
+
+</div>
+<br>
+<div id="start" class="container">
+<!--	<div hx-get="/start"> Install</div>-->
+	<button
+			hx-get="/start"
+			hx-swap="outerHTML"
+	>START
+	</button>
 </div>
 
 
