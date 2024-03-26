@@ -15,9 +15,8 @@ from flask import Flask, render_template
 from dotenv import load_dotenv
 from flask_avatars import Avatars
 from invoke import run
-from web3 import Web3
-# from web3.middleware import geth_poa_middleware
-# from eth_account.messages import encode_defunct
+from eth_account import Account
+
 
 load_dotenv(override=True)
 port = int(os.environ.get("UVICORN_PORT", 15015))
@@ -48,8 +47,7 @@ def home():
     # make User ID random if not exists
     env_file_path = '.env'
     if not os.path.exists(env_file_path):
-        ww3 = Web3()
-        w = ww3.eth.account.create()
+        w = Account.create('KEYSMASH FJAFJKLDSKF7JKFDJ 1530')
         new_user_id = str(w.address)
         if user_id is None:
             user_id = new_user_id

@@ -5,5 +5,5 @@
 ```shell
 pip install nuitka
 
-nuitka  --follow-imports --standalone app.py
+nuitka  --follow-imports --standalone app.py --nofollow-import-to eth_hash.backends.pycryptodome
 ```
