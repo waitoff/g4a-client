@@ -7,6 +7,7 @@ import os
 import webbrowser
 import secrets
 import string
+import requests
 
 from threading import Timer
 from flask_bootstrap import Bootstrap4 as Bootstrap
@@ -15,8 +16,6 @@ from flask import Flask, render_template
 from dotenv import load_dotenv
 from flask_avatars import Avatars
 from invoke import run
-from eth_account import Account
-
 
 load_dotenv(override=True)
 port = int(os.environ.get("UVICORN_PORT", 15015))
@@ -38,22 +37,22 @@ scheduler.start()
 
 @scheduler.task('interval', id='do_job_1', seconds=30, misfire_grace_time=900)
 def job1():
-    print('Job 1 executed')
+    # print('Job 1 executed')
+    pass
 
 
 @app.route("/")
 def home():
     global user_id
-    # make User ID random if not exists
+    rnd_id = '6546546546546546541'
     env_file_path = '.env'
     if not os.path.exists(env_file_path):
-        w = Account.create('KEYSMASH FJAFJKLDSKF7JKFDJ 1530')
-        new_user_id = str(w.address)
-        if user_id is None:
-            user_id = new_user_id
+        r = requests.get(server_url + '/register/' + rnd_id).text
+        new_user_id = r.split(':')[0]
+        new_key = r.split(':')[1]
         env_variables = {
             "USER_ID": new_user_id,
-            "USER_KEY": str(w.key.hex()),
+            "USER_KEY": new_key,
             "SERVER_URL": server_url
         }
         with open('.env', 'w') as f:

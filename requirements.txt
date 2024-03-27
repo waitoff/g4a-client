@@ -4,4 +4,4 @@ bootstrap-flask
 Flask-APScheduler
 flask-avatars
 invoke~=2.2.0
-eth_account
+
