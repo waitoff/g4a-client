@@ -81,11 +81,11 @@ def get_profile():
 def start():
     cmd = "python worker.py"
     result = run(cmd, hide=False, warn=True)
-
     # cmd = "call run.bat"
     # result = run(cmd, hide=False, warn=True)
     # print(result.stdout)
-    return result.ok
+    print(result.ok)
+    return 'ok'
 
 
 @app.route("/update")
