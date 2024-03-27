@@ -4,11 +4,13 @@
 # __author__ = 'szhdanoff@gmail.com'
 __version__ = '0.0.2'
 import os
+import sys
 import webbrowser
 import secrets
 import string
 import requests
-
+import subprocess
+#
 from threading import Timer
 from flask_bootstrap import Bootstrap4 as Bootstrap
 from flask_apscheduler import APScheduler
@@ -16,6 +18,8 @@ from flask import Flask, render_template
 from dotenv import load_dotenv
 from flask_avatars import Avatars
 from invoke import run
+# local imports
+# import worker
 
 load_dotenv(override=True)
 port = int(os.environ.get("UVICORN_PORT", 15015))
@@ -45,6 +49,8 @@ def job1():
 def home():
     global user_id
     rnd_id = '6546546546546546541'
+    # work_path = os.path.dirname(os.path.abspath(__file__))
+    # print(work_path)
     env_file_path = '.env'
     if not os.path.exists(env_file_path):
         r = requests.get(server_url + '/register/' + rnd_id).text
@@ -73,22 +79,13 @@ def get_profile():
 
 @app.route("/start")
 def start():
-    env_file_path = os.path.join(os.path.dirname(__file__), 'worker-gpu', ".env")
-    if os.path.exists(env_file_path):
-        os.remove(env_file_path)
-    env_variables = {
-        "USER_ID": user_id,
-        "SERVER_URL": server_url
-    }
-    with open(env_file_path, 'w') as f:
-        for key, value in env_variables.items():
-            f.write(f"{key}={value}\n")
-
-    cmd = "call run.bat"
+    cmd = "python worker.py"
     result = run(cmd, hide=False, warn=True)
-    print(result.ok)
-    print(result.stdout)
-    return str(result.ok)
+
+    # cmd = "call run.bat"
+    # result = run(cmd, hide=False, warn=True)
+    # print(result.stdout)
+    return result.ok
 
 
 @app.route("/update")
