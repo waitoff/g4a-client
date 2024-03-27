@@ -1,8 +1,7 @@
-#!D:\work\.virtualenvs\g4a-client\Scripts\python.exe
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # __author__ = 'szhdanoff@gmail.com'
-__version__ = '0.0.2'
+__version__ = '0.0.3'
 import os
 import sys
 import webbrowser
