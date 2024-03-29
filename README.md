@@ -2,8 +2,6 @@
 
 ## dist
 
-```shell
-pip install nuitka
-
-nuitka  --follow-imports --standalone app.py --nofollow-import-to eth_hash.backends.pycryptodome
+```text
+Worker can be run separately - with command run.bat 
 ```

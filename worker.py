@@ -84,23 +84,10 @@ def get_stat():
     global my_id
     try:
         with httpx.Client() as client:
-            request = {'jsonrpc': '2.0', 'method': 'stat', 'params': [my_id], 'id': 1}
+            config = str(my_config)
+            request = {'jsonrpc': '2.0', 'method': 'stat', 'params': [my_id, config], 'id': 1}
             s = client.post(url=server_url + "/api/rpc", json=request)
             response = s.json()
-            # print('result=', response['result'])
-
-            # id_panel = Panel(Text(f"My ID: {my_id} \n"
-            #                       f"My status: \n"
-            #                       f"- All tasks           : {all_tasks}\n"
-            #                       f"- All result task     : {all_tasks_result}\n"
-            #                       f"- My tasks            : {my_tasks}\n"
-            #                       f"- My task percent     : {my_tasks_percent}\n"
-            #                       f"- All solutions       : {all_solutions}\n"
-            #                       f"- My solutions        : {my_solutions}\n"
-            #                       f"- My solutions percent: {my_solutions_percent}\n\n"
-            #                       f"Script version        : {__version__}\n"
-            #                       f"Work Server           : {server_url}\n",
-            #                       justify="left"))
             id_panel = Panel(Text(f"My ID: {my_id} \n"
                                   f"My status             : {response['result']['status']}\n"
                                   f"- My tasks            : {response['result']['work_count']}\n"
@@ -146,9 +133,9 @@ async def get_task():
             # print('-------------- 1 get_work ---------------')
             config = my_config
             request = {'jsonrpc': '2.0', 'method': 'get_work', 'params': [my_id, config], 'id': 1}
-            result_file_name = ''
-            result_file_size = 0
-            encoded_file = ''
+            # result_file_name = ''
+            # result_file_size = 0
+            # encoded_file = ''
 
             async with session.post(url=server_url + "/api/rpc", json=request) as resp:
                 response = await resp.json()
@@ -213,7 +200,7 @@ async def process_task(algorithm, parameters: str):
     p = eval(parameters)
     if algorithm == 'PI':
         # n = 100000000  # общее количество точек (чем больше точек, тем лучше точность)
-        n = 10000000  # общее количество точек (чем больше точек, тем лучше точность)
+        n = 10000000
         return await estimate_pi(n)
 
     if algorithm == 'QR':

@@ -23,7 +23,14 @@
             <td>     </td>
             <td>
                 <h1>User: {{ profile.name }}</h1>
-                <p>id: {{ profile.id }}</p>
+                <br>
+                  <div class="container mt-3">
+                    <div class="alert alert-warning" role="alert">
+                <!--      This is a user note. You can customize the alert type (e.g., alert-info, alert-warning, alert-danger) based on the nature of the note.-->
+                        <p>This is the identifier of your wallet, the .env file stores the key to it. Save it and do not give it to anyone. </p>
+                    </div>
+                  </div>
+                <p>    id: {{ profile.id }}</p>
             </td>
         </tr>
     </table>

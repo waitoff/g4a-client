@@ -1,14 +1,14 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # __author__ = 'szhdanoff@gmail.com'
-__version__ = '0.0.3'
+__version__ = '0.1.4'
 import os
 import sys
 import webbrowser
 import secrets
 import string
 import requests
-import subprocess
+# import subprocess
 #
 from threading import Timer
 from flask_bootstrap import Bootstrap4 as Bootstrap
@@ -17,6 +17,7 @@ from flask import Flask, render_template
 from dotenv import load_dotenv
 from flask_avatars import Avatars
 from invoke import run
+from web3 import Web3
 # local imports
 # import worker
 
@@ -26,7 +27,6 @@ host = os.environ.get("UVICORN_HOST", "127.0.0.1")
 debug = bool(os.environ.get("UVICORN_DEBUG", False))
 server_url = os.environ.get("SERVER_URL", "https://manager.g4a.auk.su")
 user_id = os.environ.get("USER_ID")
-# SECRET_KEY = 'L7qi1RC7b6B24UFfBUu69497e72H2NFhbUlO6P9GkP86isf7i2'
 SECRET_KEY = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(64))
 
 app = Flask(__name__, static_folder="static")
@@ -47,17 +47,16 @@ def job1():
 @app.route("/")
 def home():
     global user_id
-    rnd_id = '6546546546546546541'
-    # work_path = os.path.dirname(os.path.abspath(__file__))
-    # print(work_path)
     env_file_path = '.env'
     if not os.path.exists(env_file_path):
-        r = requests.get(server_url + '/register/' + rnd_id).text
-        new_user_id = r.split(':')[0]
-        new_key = r.split(':')[1]
+        ww3 = Web3()
+        w = ww3.eth.account.create()
+        new_user_id = str(w.address)
+        if user_id is None:
+            user_id = new_user_id
         env_variables = {
             "USER_ID": new_user_id,
-            "USER_KEY": new_key,
+            "USER_KEY": str(w.key.hex()),
             "SERVER_URL": server_url
         }
         with open('.env', 'w') as f:
@@ -78,13 +77,11 @@ def get_profile():
 
 @app.route("/start")
 def start():
+    print('Launch worker')
     cmd = "python worker.py"
     result = run(cmd, hide=False, warn=True)
-    # cmd = "call run.bat"
-    # result = run(cmd, hide=False, warn=True)
-    # print(result.stdout)
     print(result.ok)
-    return 'ok'
+    return 'Worker started'
 
 
 @app.route("/update")
