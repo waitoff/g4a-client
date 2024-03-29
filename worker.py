@@ -43,6 +43,9 @@ run_on_start = False
 
 
 def get_id():
+    """
+    A function to get system information like memory, CPU, GPU, and OS details.
+    """
     import psutil
     import platform
     import GPUtil
@@ -81,6 +84,9 @@ def get_id():
 
 
 def get_stat():
+    """
+    A function to retrieve statistics using an API call with given parameters and display the results.
+    """
     global my_id
     try:
         with httpx.Client() as client:
@@ -117,6 +123,11 @@ def get_stat():
 
 
 async def get_task():
+    """
+    A function to get a task from the server, process it, and complete it.
+    This function interacts with the server using async requests and handles various responses.
+    Returns True upon successful completion.
+    """
     async def encode_file_base64(file_path):
         with open(file_path, "rb") as file:
             encoded_bytes = base64.b64encode(file.read())
@@ -197,6 +208,16 @@ async def estimate_pi(n):
 
 
 async def process_task(algorithm, parameters: str):
+    """
+    Process a task based on the specified algorithm and parameters.
+
+    Args:
+        algorithm (str): The algorithm to be used for processing the task.
+        parameters (str): The parameters needed for the task.
+
+    Returns:
+        The result of processing the task based on the algorithm.
+    """
     p = eval(parameters)
     if algorithm == 'PI':
         # n = 100000000  # общее количество точек (чем больше точек, тем лучше точность)
