@@ -56,8 +56,18 @@
   </ul>
   <p>.</p>
 </div>
-
-
+<br>
+<br>
+<div id="start" class="container">
+	<button  class="btn btn-primary"
+			hx-get="/start"
+			hx-target=this
+			hx-swap="outerHTML"
+	>START
+	</button>
+</div>
+<br>
+<br>
 <div class="container">
 	<button
 			hx-get="/update"
@@ -66,13 +76,18 @@
 	</button>
 </div>
 <br>
-<div id="start" class="container">
-	<button
-			hx-get="/start"
+<br>
+<div id="stats" class="container">
+	<div id="my-stat-result"></div>
+	<br>
+	<button class="btn btn-primary"
+			hx-get="/stat"
+			hx-target="#my-stat-result"
 			hx-swap="outerHTML"
-	>START
+	>Get stats
 	</button>
 </div>
+
 
 <!--<div class="container">-->
 <!--	<p>Min Price:</p>-->

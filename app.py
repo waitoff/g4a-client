@@ -3,7 +3,7 @@
 # __author__ = 'szhdanoff@gmail.com'
 __version__ = '0.1.4'
 import os
-import sys
+import httpx
 import webbrowser
 import secrets
 import string
@@ -133,6 +133,23 @@ def update():
     print(result.ok)
     print(result.stdout)
     return str(result.ok)
+
+
+@app.route("/stat")
+def stat():
+    """
+    A function to make a GET request to the server for statistics data and display it in an HTML container.
+    """
+    r = httpx.get(server_url + '/users/stat', headers={'authorization': user_id})
+    return f'''
+    <div class="container">
+        <h4>Stats:</h4>
+        <p>Number of workers: <span id="workers_count">{r.json()['workers_count']}</span></p>
+        <p>Number of works: <span id="works_count">{r.json()['works_count']}</span></p>
+        <p>Number of solutions: <span id="solution_count">{r.json()['solution_count']}</span></p>
+        <p>Average work time: <span id="avg_work_time">{r.json()['avg_work_time']}</span></p>
+    </div>
+    '''
 
 
 def open_browser():

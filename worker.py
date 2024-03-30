@@ -1,4 +1,3 @@
-#!D:\work\.virtualenvs\g4a-worker-GPU\Scripts\python.exe
 # #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # __author__ = 'szhdanoff@gmail.com'
@@ -39,7 +38,6 @@ fernet_key = os.environ.get("FERNET_KEY", b'7Ql80xScamifSl7Q_Q45PgF2zjfI2GdZZ2wu
 work_code = ''
 my_config = {}
 get_stat_period = 180
-run_on_start = False
 
 
 def get_id():
