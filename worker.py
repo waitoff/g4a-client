@@ -1,7 +1,7 @@
 # #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # __author__ = 'szhdanoff@gmail.com'
-__version__ = "1.1.4.GPU"
+__version__ = "1.1.5.GPU"
 
 import base64
 import sys

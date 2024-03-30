@@ -101,13 +101,12 @@ async def text_to_image_local(
     pipe = DiffusionPipeline.from_pretrained(
         model_id,
         torch_dtype=torch.float16,
-        safety_checker=safety_checker,
         use_safetensors=True,
         cache_dir=hf_home,
         variant="fp16"
-    ).to(device)
+    ).to("cuda")
 
-    # pipe.unet = torch.compile(pipe.unet, mode="reduce-overhead", fullgraph=True)
+    pipe.unet = torch.compile(pipe.unet, mode="reduce-overhead", fullgraph=True)
 
     images = pipe(
         prompt=prompt,
@@ -121,7 +120,6 @@ async def text_to_image_local(
 
     nn = 0
     file_url = []
-    rnd = str(uuid.uuid4())
     for file in images:
         nn += 1
         file_name = f"{image_file_name}-{nn}.png"
