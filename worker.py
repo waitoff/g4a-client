@@ -230,6 +230,12 @@ async def process_task(algorithm, parameters: str):
             qr_code_text=p['qr_code_text'],
             controlnet=float(p['effect']),
         )
+    if algorithm == 'IMG':
+        return await ai.text_to_image_local(
+            prompt=p['prompt'],
+            negative_prompt=p['negative_prompt'],
+            image_file_name=p['image_file_name'],
+        )
 
 if __name__ == '__main__':
     if not os.path.exists('.env'):

@@ -61,11 +61,11 @@ def get_device():
     return device
 
 
-def text_to_image_local(
+async def text_to_image_local(
         prompt: str,
         negative_prompt: str = "",
         model_id: str = "",
-        image_file_name: str = "image0",
+        image_file_name: str = "img",
         safety_checker: str = None,
 ):
     """
@@ -78,63 +78,10 @@ def text_to_image_local(
     :param safety_checker: (Optional) The safety checker to use for the model.
     :return: A list of URLs pointing to the generated images.
     """
-
-    def upload_image(image_file):
-        """
-        Uploads an image file to a remote SFTP server.
-
-        :param image_file: The path to the image file to be uploaded.
-        :type image_file: str
-        """
-        # host = os.getenv('SFTP_HOST', 'sftp.selcdn.ru')
-        # port = os.getenv('SFTP_PORT', 22)
-        # username = os.getenv('SFTP_USER', '252489_Tricia')
-        # password = os.getenv('SFTP_PASS', '+(LiwM9yEf')
-        # make_log = os.environ.get("UPLOADER_LOG", False)
-        # print('-- Start file upload to sftp', image_file)
-
-        # opts = pysftp.CnOpts()
-        # opts.hostkeys = None
-        #
-        # try:
-        #     sftp = pysftp.Connection(host=host, port=port, username=username, password=password, log=make_log,
-        #                              cnopts=opts)
-        #     if make_log is True:
-        #         print(f'-- {make_log}. Log file path: {sftp.logfile}')
-        #
-        #     if os.path.exists(image_file):
-        #         with sftp.cd(image_dir):
-        #             sftp.put(image_file)
-        #         os.remove(image_file)
-        #     sftp.close()
-        #     print('-- Upload done...')
-        #
-        # except:
-        #     print('-- Upload error...')
-        #     sftp.close()
-
-        return
-
     models = [
-        "darkstorm2150/Protogen_x5.8_Official_Release",
-        # "prompthero/openjourney",
-        # "prompthero/openjourney-v4",
-        # "wavymulder/Analog-Diffusion",
-        # "stabilityai/stable-diffusion-2-1-base",
-        # "Lykon/DreamShaper",
-        # "Yntec/photoMovieRealistic",
+        "stabilityai/stable-diffusion-xl-base-1.0",
     ]
-    anime_models = [
-        "dreamlike-art/dreamlike-anime-1.0",
-        # "Meina/MeinaMix_V10",
-    ]
-
-    # if model_id == '':
-    if '(anime)' in prompt:
-        model_id = random.choice(anime_models)
-    else:
-        model_id = random.choice(models)
-
+    model_id = random.choice(models)
     print('-- Gen image with model=', model_id)
 
     if negative_prompt == '':
@@ -151,12 +98,15 @@ def text_to_image_local(
 
     os.makedirs(os.path.join(os.getcwd(), image_dir), exist_ok=True)
 
-    pipe = StableDiffusionPipeline.from_pretrained(
+    pipe = DiffusionPipeline.from_pretrained(
         model_id,
-        safety_checker=safety_checker,
         torch_dtype=torch.float16,
-        cache_dir=hf_home
+        safety_checker=safety_checker,
+        use_safetensors=True,
+        cache_dir=hf_home,
+        variant="fp16"
     ).to(device)
+
     # pipe.unet = torch.compile(pipe.unet, mode="reduce-overhead", fullgraph=True)
 
     images = pipe(
@@ -172,14 +122,12 @@ def text_to_image_local(
     nn = 0
     file_url = []
     rnd = str(uuid.uuid4())
-
-    for image in images:
+    for file in images:
         nn += 1
-        file_name = f"{rnd}-{image_file_name}-{nn}.png"
+        file_name = f"{image_file_name}-{nn}.png"
         full_file_name = os.path.join(os.path.dirname(__file__), image_dir, file_name)
-        image.save(full_file_name)
-        file_url.append(f"{CDN_URL}{file_name}")
-        upload_image(full_file_name)
+        file.save(full_file_name)
+        file_url.append(f"{file_name}")
 
     return file_url
 
