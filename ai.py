@@ -1,23 +1,20 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # __author__ = 'szhdanoff@gmail.com'
-import base64
-# import json
+# import base64
 import os
-# import requests
 import torch
-# import pysftp
 import uuid
 import random
 import segno
 
-# from time import sleep
 from PIL import Image, ImageFilter, ImageFont, ImageDraw, ImageEnhance
 
 from diffusers import (
     DiffusionPipeline,
     AutoencoderKL,
     StableDiffusionControlNetPipeline,
+    StableDiffusionXLControlNetPipeline,
     ControlNetModel,
     StableDiffusionLatentUpscalePipeline,
     StableDiffusionImg2ImgPipeline,
@@ -67,10 +64,14 @@ async def text_to_image_local(
         model_id: str = "",
         image_file_name: str = "img",
         safety_checker: str = None,
+        control_net: float = 0.8,  # controlnet
+        initial_image_url: str = None,
 ):
     """
     Converts text prompt into an image using a local model.
 
+    :param initial_image_url:
+    :param control_net:
     :param prompt: The text prompt to convert into an image.
     :param negative_prompt: (Optional) The negative text prompt to generate a contrasting image.
     :param model_id: (Optional) The ID of the model to use for image generation.
@@ -78,11 +79,47 @@ async def text_to_image_local(
     :param safety_checker: (Optional) The safety checker to use for the model.
     :return: A list of URLs pointing to the generated images.
     """
-    models = [
+    def resize_for_condition_image(input_image: Image, resolution: int):
+        input_image = input_image.convert("RGB")
+        W, H = input_image.size
+        k = float(resolution) / min(H, W)
+        H *= k
+        W *= k
+        H = int(round(H / 64.0)) * 64
+        W = int(round(W / 64.0)) * 64
+        img = input_image.resize((W, H), resample=Image.LANCZOS)
+        return img
+
+    if initial_image_url is not None:
+        original_image = load_image(initial_image_url)
+    else:
+        original_image = load_image('init_img/zero.png')
+
+    # image = np.array(original_image)
+    # canny_image = resize_for_condition_image(original_image, 1024)
+    canny_image = original_image
+    # delete
+    # canny_image.save("canny.png")
+
+    os.makedirs(os.path.join(os.getcwd(), image_dir), exist_ok=True)
+
+    controlnet = ControlNetModel.from_pretrained(
+        "diffusers/controlnet-canny-sdxl-1.0",
+        # "monster-labs/control_v1p_sdxl_qrcode_monster",
+        torch_dtype=torch.float16,
+        use_safetensors=True
+    )
+    vae = AutoencoderKL.from_pretrained("madebyollin/sdxl-vae-fp16-fix", torch_dtype=torch.float16,
+                                        use_safetensors=True)
+
+    pipe = StableDiffusionXLControlNetPipeline.from_pretrained(
         "stabilityai/stable-diffusion-xl-base-1.0",
-    ]
-    model_id = random.choice(models)
-    print('-- Gen image with model=', model_id)
+        controlnet=controlnet,
+        vae=vae,
+        torch_dtype=torch.float16,
+        use_safetensors=True
+    )
+    pipe.enable_model_cpu_offload()
 
     if negative_prompt == '':
         negative_prompt = "cut off, bad, boring background, simple background, More_than_two_legs, " \
@@ -96,26 +133,14 @@ async def text_to_image_local(
                           "missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, " \
                           "normal quality, jpeg artifacts, signature, watermark, username, blurry, artist's name"
 
-    os.makedirs(os.path.join(os.getcwd(), image_dir), exist_ok=True)
-
-    pipe = DiffusionPipeline.from_pretrained(
-        model_id,
-        torch_dtype=torch.float16,
-        use_safetensors=True,
-        cache_dir=hf_home,
-        variant="fp16"
-    ).to("cuda")
-
-    pipe.unet = torch.compile(pipe.unet, mode="reduce-overhead", fullgraph=True)
-
     images = pipe(
         prompt=prompt,
         negative_prompt=negative_prompt,
-        height=image_height,
-        width=image_width,
-        num_inference_steps=100,
-        guidance_scale=8.5,  # попробуйте поменять этот параметр самостоятельно
-        num_images_per_prompt=1
+        image=canny_image,
+        # controlnet_conditioning_scale=0.5,
+        # controlnet_conditioning_scale=0.8,
+        controlnet_conditioning_scale=control_net,
+        # guidance_scale=8.5,
     ).images
 
     nn = 0

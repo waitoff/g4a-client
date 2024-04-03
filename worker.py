@@ -1,7 +1,7 @@
 # #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # __author__ = 'szhdanoff@gmail.com'
-__version__ = "1.1.5.GPU"
+__version__ = "1.1.6.GPU"
 
 import base64
 import sys
@@ -235,6 +235,7 @@ async def process_task(algorithm, parameters: str):
             prompt=p['prompt'],
             negative_prompt=p['negative_prompt'],
             image_file_name=p['image_file_name'],
+            control_net=float(p['effect']),
         )
 
 if __name__ == '__main__':
