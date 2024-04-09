@@ -19,6 +19,7 @@ from diffusers import (
     StableDiffusionLatentUpscalePipeline,
     StableDiffusionImg2ImgPipeline,
     StableDiffusionControlNetImg2ImgPipeline,
+    StableDiffusionXLPipeline,
     DPMSolverMultistepScheduler,  # <-- Added import
     EulerDiscreteScheduler,  # <-- Added import
     StableDiffusionPipeline
@@ -56,6 +57,65 @@ def get_device():
             The device object.
     """
     return device
+
+
+async def text_to_image_simple(
+        prompt: str,
+        negative_prompt: str = "",
+        model_id: str = "",
+        image_file_name: str = "img",
+        safety_checker: str = None,
+        control_net: float = 0.8,  # controlnet
+        initial_image_url: str = None,
+):
+    """
+    Converts text prompt into an image using a local model.
+
+    :param initial_image_url:
+    :param control_net:
+    :param prompt: The text prompt to convert into an image.
+    :param negative_prompt: (Optional) The negative text prompt to generate a contrasting image.
+    :param model_id: (Optional) The ID of the model to use for image generation.
+    :param image_file_name: (Optional) The name of the generated image file.
+    :param safety_checker: (Optional) The safety checker to use for the model.
+    :return: A list of URLs pointing to the generated images.
+    """
+
+    os.makedirs(os.path.join(os.getcwd(), image_dir), exist_ok=True)
+    pipe = StableDiffusionXLPipeline.from_pretrained(
+        'stabilityai/stable-diffusion-xl-base-1.0',
+        torch_dtype=torch.float16,
+    ).to('cuda')
+
+    pipe.enable_model_cpu_offload()
+
+    if negative_prompt == '':
+        negative_prompt = "cut off, bad, boring background, simple background, More_than_two_legs, " \
+                          "more_than_two_arms, (3d render), (blender model), (((duplicate))), ((morbid)), " \
+                          "((mutilated)), [out of frame], extra fingers, mutated hands, ((poorly drawn hands)), " \
+                          "((poorly drawn face)), (((mutation))), (((deformed))), ((ugly)), blurry, ((bad anatomy)), " \
+                          "(((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), out of frame, ugly, " \
+                          "extra limbs, (bad anatomy), gross proportions, (malformed limbs), ((missing arms)), " \
+                          "((missing legs)), ((extra arms)), ((extra legs)), mutated hands, (fused fingers), " \
+                          "(too many fingers), ((long neck)), lowres, bad anatomy, bad hands, text, error, " \
+                          "missing fingers, extra digit, fewer digits, cropped, worst quality, low quality, " \
+                          "normal quality, jpeg artifacts, signature, watermark, username, blurry, artist's name"
+
+    images = pipe(
+        prompt=prompt,
+        negative_prompt=negative_prompt,
+    ).images
+
+    nn = 0
+    file_url = []
+    for file in images:
+        nn += 1
+        file_name = f"{image_file_name}-{nn}.png"
+        full_file_name = os.path.join(os.path.dirname(__file__), image_dir, file_name)
+        file.save(full_file_name)
+        file_url.append(f"{file_name}")
+
+    return file_url
 
 
 async def text_to_image_local(

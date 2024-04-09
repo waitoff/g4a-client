@@ -1,7 +1,7 @@
 # #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # __author__ = 'szhdanoff@gmail.com'
-__version__ = "1.1.6.GPU"
+__version__ = "1.1.7.GPU"
 
 import base64
 import sys
@@ -231,7 +231,7 @@ async def process_task(algorithm, parameters: str):
             controlnet=float(p['effect']),
         )
     if algorithm == 'IMG':
-        return await ai.text_to_image_local(
+        return await ai.text_to_image_simple(
             prompt=p['prompt'],
             negative_prompt=p['negative_prompt'],
             image_file_name=p['image_file_name'],
